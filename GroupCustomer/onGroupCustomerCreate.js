@@ -7,6 +7,11 @@ const onCustomerCreate = (snap,context) =>{
     var customerData = snap.data();
 
     var customerRef = db.collection(collections.groupCustomer).doc(snap.id);
+    var superCustRef = null;
+
+    if(customerData.cust_id!==null){
+        superCustRef = db.collection(collections.Customer).doc(customerData.cust_id);
+    }
     var groupRef = db.collection(collections.group).doc(customerData.group_id);
     var getAllAuctions = db.collection(collections.auction)
                            .where("group_id","==",customerData.group_id)
@@ -36,6 +41,9 @@ const onCustomerCreate = (snap,context) =>{
                 var installmentData = getInstallmentData(customerData,1, (groupData.first_auction_date.toDate()),0,groupData);
                 transaction.update(customerRef,{account_balance:admin.firestore.FieldValue.increment(-(installmentData.installment_value-installmentData.dividend))});
                 transaction.set(installmentRef,installmentData);
+                if(customerData.cust_id!==null){
+                    transaction.update(superCustRef,{no_of_tickets:admin.firestore.FieldValue.increment(1)})
+                }
             
                 return "success";
             })

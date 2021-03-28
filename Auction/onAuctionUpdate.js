@@ -13,6 +13,7 @@ const onAuctionUpdate = (change,context) =>{
     var auctionData = change.after.data();
 
     if(prevAuctionData.status === "pending" && auctionData.status==="inCollectionAccount"){
+    
         return markCustomerAsPrized(auctionData).then(()=>{
             return addInstallmentToUserAccount(auctionData,auctionData.group_id).then(()=>{
                 console.log("Done updating user accounts");
@@ -33,10 +34,11 @@ const onAuctionUpdate = (change,context) =>{
 
 }
 
+
 const markCustomerAsPrized = (auction_data) =>{
     var customerRef = db.collection(collections.groupCustomer)
     var query = customerRef.where("ticket_no","==",auction_data.bidder_details.ticket_id).where("group_id","==",auction_data.group_id);
-
+    var groupRef = db.collection(collections.group).doc(auction_data.group_id);
     return db.runTransaction((transaction)=>{
         return transaction.get(query).then((snap)=>{
             if(snap.size===0){
@@ -53,6 +55,7 @@ const markCustomerAsPrized = (auction_data) =>{
             if(customerData.status==="Prized"){
                 throw new Error("Customer is Already Prized");
             }
+            transaction.update(groupRef,{no_of_auctions_completed:admin.firestore.FieldValue.increment(1)});
             transaction.update(customerRef.doc(custDocID),{status:"Prized",prizedInstallment:auction_data.auction_no});
             return "success"
         })
@@ -75,6 +78,7 @@ const addInstallmentToUserAccount = (auction_data,group_id) =>{
         return db.runTransaction((transaction)=>{
             return transaction.get(groupCustomerRef).then((snap)=>{
                 console.log("Adding Installment group Size got = ",snap.size);
+                
                 snap.forEach((doc)=>{
                     var userData = doc.data();
                     var userRef = db.collection(collections.groupCustomer).doc(doc.id);
@@ -171,11 +175,21 @@ function createNewAuction(auctionData){
 
     var newAuctID = auctionData.group_id + "-" + nextauctionData.auction_no;
     var newAuctRef = db.collection("Auction").doc(newAuctID);
+    var groupRef = db.collection(collections.group).doc(auctionData.group_id);
 
     return db.runTransaction((transaction)=>{
-        return transaction.get(newAuctRef).then((doc)=>{
-            if(doc.exists){
+        return transaction.getAll(newAuctRef,groupRef).then((docs)=>{
+            let auctDoc = docs[0];
+            let groupDoc = docs[1];
+            if(!groupDoc.exists){
+                throw new Error("Group Doesnt Exist");
+            }
+            if(auctDoc.exists){
                 throw new Error("Auction already exists");
+            }
+            let groupData = groupDoc.data();
+            if(groupData.no_of_auctions_completed===groupData.no_of_months){
+                throw new Error("All the ",groupData.no_of_auctions_completed," auctions are completed ");
             }
             transaction.set(newAuctRef,nextauctionData);
             return;

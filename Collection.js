@@ -1,6 +1,7 @@
 const CollectionNames = {
     group : "Group",
     groupCustomer : "GroupCustomer",
+    customer : "Customer",
     auction : "Auction",
     installment : "Installment",
     payments : "Payments",
