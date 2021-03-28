@@ -6,7 +6,6 @@ const addFirstAuctionAsCompanyAuction = (auction_id,company_chit_no,group_id,auc
 
     var auctionID = group_id + "-" + auction_id;
     var auctionRef = db.collection(collectionRef.auction).doc(auctionID);
-    var groupRef = db.collection(collectionRef.group).doc(group_id);
 
     return db.runTransaction((transaction)=>{
         return transaction.get(auctionRef).then((doc)=>{
@@ -24,7 +23,6 @@ const addFirstAuctionAsCompanyAuction = (auction_id,company_chit_no,group_id,auc
                 "status" : "inCollectionAccount",
                 "next_auction_details.next_auction_date" :  new Date(auction_date),
             });
-            transaction.update(groupRef,{no_of_auctions_completed:admin.firestore.FieldValue.increment(1)});
             return "success";
         })
     }).then(()=>{

@@ -10,7 +10,7 @@ const onCustomerCreate = (snap,context) =>{
     var superCustRef = null;
 
     if(customerData.cust_id!==null){
-        superCustRef = db.collection(collections.Customer).doc(customerData.cust_id);
+        superCustRef = db.collection(collections.customer).doc(customerData.cust_id);
     }
     var groupRef = db.collection(collections.group).doc(customerData.group_id);
     var getAllAuctions = db.collection(collections.auction)
@@ -44,6 +44,7 @@ const onCustomerCreate = (snap,context) =>{
                 if(customerData.cust_id!==null){
                     transaction.update(superCustRef,{no_of_tickets:admin.firestore.FieldValue.increment(1)})
                 }
+                transaction.update(groupRef,{occupied_members: admin.firestore.FieldValue.increment(1)})
             
                 return "success";
             })

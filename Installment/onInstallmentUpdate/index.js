@@ -18,6 +18,10 @@ const onInstallmentUpdate = (change,context) =>{
         }
     }
 
+    if(beforeData.waived_interest < instData.waived_interest){
+        return processUpdateStatus(instData,change.after.id);
+    }
+
 
     return "";
     
