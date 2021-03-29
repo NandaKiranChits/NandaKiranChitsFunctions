@@ -7,7 +7,7 @@ const onInstallmentUpdate = (change,context) =>{
 
     //update inst status
 
-    if(beforeData.total_paid < instData.total_paid){ // only if the payment is added
+    if(beforeData.total_paid !== instData.total_paid){ // only if the payment is added
         return processUpdateStatus(instData,change.after.id);
     }   
     
@@ -19,6 +19,10 @@ const onInstallmentUpdate = (change,context) =>{
     }
 
     if(beforeData.waived_interest < instData.waived_interest){
+        return processUpdateStatus(instData,change.after.id);
+    }
+
+    if(beforeData.other_charges < instData.other_charges){
         return processUpdateStatus(instData,change.after.id);
     }
 

@@ -15,13 +15,15 @@ const processUpdateStatus = (instData,documentID) =>{
 }
 
 const processInstallment = (instData) =>{
-    var total_payable = ((instData.installment_value - instData.dividend)  + instData.other_charges + (instData.interest - instData.waived_interest) - instData.accepted_from_other);
+    var total_payable = ((instData.installment_value - instData.dividend)  + instData.other_charges + (instData.interest - instData.waived_interest));
+    console.log("Total Payable = ",total_payable);
     var total_paid = instData.total_paid;
+    console.log("total Paid = ",total_paid);
     let status = null;
     if(total_paid >= total_payable){
         status = "paid";
     }
-    else if(total_paid>0 && (total_paid<=total_payable)){
+    else if((total_paid>0) && (total_paid<total_payable)){
         status = "part";
     }
     else{

@@ -66,7 +66,8 @@ function processInstallments(snap,transaction,excess_amount,lastReceiptID){
         let available = 0;
 
         console.log("Excess amount is used for insllment",subinstData.auction_no);
-        
+
+
         if(excess_amount>=payable){
             available = payable;
         }
@@ -74,11 +75,13 @@ function processInstallments(snap,transaction,excess_amount,lastReceiptID){
             available = excess_amount;
         }
 
+        console.log("USing ",available, " Amount in the installment")
+
         excess_amount = excess_amount - available;
         
         let toUpdate = {
-            total_paid : admin.firestore.FieldValue.increment(payable),
-            accepted_from_other : admin.firestore.FieldValue.increment(payable),
+            total_paid : admin.firestore.FieldValue.increment(available),
+            accepted_from_other : admin.firestore.FieldValue.increment(available),
         }
         transaction.update(subinstRef,toUpdate);
         logs.push({
