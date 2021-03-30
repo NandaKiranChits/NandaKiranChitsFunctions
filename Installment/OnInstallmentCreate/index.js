@@ -77,7 +77,7 @@ function processReceiptUsage(receipt_usage,used_amount,inst_no){
         let available = receipt_usage[i].value - receipt_usage[i].total_used;
         if(available>0){
             let using = 0;
-            if(available<=used_amount){
+            if(available>=used_amount){
                 using = used_amount;
             }
             else{

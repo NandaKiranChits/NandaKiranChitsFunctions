@@ -7,27 +7,29 @@ const onInstallmentUpdate = (change,context) =>{
 
     //update inst status
 
+    var updateStatus = false;
+
     if(beforeData.total_paid !== instData.total_paid){ // only if the payment is added
-        return processUpdateStatus(instData,change.after.id);
-    }   
+        updateStatus = true;
+    }  
     
-    if(beforeData.advance_paid < instData.advance_paid){ // if the advance paid has increased
-        let excess_amount = instData.advance_paid - instData.donated;
-        if(excess_amount>0){
-            return processExcessAmount(change.after.id,instData);
-        }
+    if((instData.advance_paid-instData.donated) > 0){
+        return processExcessAmount(change.after.id,instData);
     }
 
     if(beforeData.waived_interest < instData.waived_interest){
-        return processUpdateStatus(instData,change.after.id);
+        updateStatus = true;
     }
 
     if(beforeData.other_charges < instData.other_charges){
-        return processUpdateStatus(instData,change.after.id);
+        updateStatus = true;
     }
 
+    if(updateStatus){
+        processUpdateStatus(instData,change.after.id);
+    }
 
-    return "";
+    return processExcessAmount(change.after.id,instData); // just to make sure everything is taken care
     
 }
 

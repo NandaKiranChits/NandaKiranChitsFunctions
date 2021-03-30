@@ -19,8 +19,10 @@ const processInstallment = (instData) =>{
     
     console.log("Total Payable = ",total_payable);
     
-    var total_paid = instData.total_paid;
+    //total paid will already contain every incoming source
+    var total_paid = (instData.total_paid ) - (instData.advance_paid-instData.donated); 
     console.log("total Paid = ",total_paid);
+
     
     let status = null;
     if(total_paid >= total_payable){

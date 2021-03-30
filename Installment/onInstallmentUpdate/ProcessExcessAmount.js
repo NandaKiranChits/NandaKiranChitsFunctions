@@ -2,6 +2,20 @@ const db = require("../../adminDb");
 const admin = require("../../admin");
 var collections = require("../../Collection");
 
+/*
+
+REWRITE THIS EXCESS AMOUNT PROCESs
+
+Problem 1:Donates more than available
+Problem 2:Adds money to installments without any source
+
+Suggestions : 
+
+1. Probably its happening because of the repeating execution of the same.
+2. Try sepearting update and process
+
+*/
+
 const processExcessAmount = (inst_doc_id,instData) =>{
     var instRef = db.collection(collections.installment).doc(inst_doc_id);
     var dueInstQuery = db.collection(collections.installment)
@@ -26,6 +40,7 @@ const processExcessAmount = (inst_doc_id,instData) =>{
             var result = processInstallments(snap,transaction,excess_amount,receipt_usage); // run only once
 
             var donated = (excess_amount - result[0]);
+            
             receipt_usage = result[1];
 
             transaction.update(instRef,{donated:admin.firestore.FieldValue.increment(donated),receipt_usage});
@@ -47,7 +62,6 @@ const processExcessAmount = (inst_doc_id,instData) =>{
 function processInstallments(snap,transaction,excess_amount,receipt_usage){
    
 
-
     console.log("Size of snap is ",snap.size)
 
     snap.forEach((doc)=>{
@@ -61,8 +75,10 @@ function processInstallments(snap,transaction,excess_amount,receipt_usage){
         let available = 0;
 
         console.log("Excess amount is used for insllment",subinstData.auction_no);
+        console.log("Payable = ",payable);
 
         if(payable <= 0 ){
+            console.log("Returning as payable is lesser than 0");
             return;
         }
 
@@ -99,7 +115,7 @@ function processReceiptUsage(receipt_usage,used_amount,inst_no){
         let available = receipt_usage[i].value - receipt_usage[i].total_used;
         if(available>0){
             let using = 0;
-            if(available<=used_amount){
+            if(available>=used_amount){
                 using = used_amount;
             }
             else{
@@ -122,7 +138,7 @@ function getPayable(instData){
     let total_payable = ((instData.installment_value - instData.dividend)  
                         + instData.other_charges 
                         + (instData.interest - instData.waived_interest) 
-                        - (instData.accepted_from_other+instData.total_paid));
+                        - (instData.total_paid));
     return total_payable;
 }
 
