@@ -1,7 +1,7 @@
 const admin = require("../admin");
 const collection = require("../Collection");
 const db  = require("../adminDb");
-
+const removeFromDailySummary = require("../DailySummary/removeFromDailySummary");
 
 const cancelPayment = (change,context) =>{
     let payment_before_data = change.before.data();
@@ -12,7 +12,7 @@ const cancelPayment = (change,context) =>{
         return;
     }
 
-    console.log("PAyment document id = ",change.after.id," change.after = ",change.after);
+    console.log("Payment document id = ",change.after.id," change.after = ",change.after);
 
     let paymentDataRef = db.collection(collection.payments).doc(change.after.id);
 
@@ -22,24 +22,33 @@ const cancelPayment = (change,context) =>{
     let inst_doc_id = group_id + "-" + inst_no + "-" + ticket_no;
     let instRef = db.collection(collection.installment).doc(inst_doc_id);
 
-    return db.runTransaction((transaction)=>{
-        return transaction.get(instRef).then((doc)=>{
-            if(!doc.exists){
-                throw new Error("Installment Not Found");
-            }
-            let instData = doc.data();
-            let receipt_usage = instData.receipt_usage;
-            transaction.update(paymentDataRef,{receipt_ids  : admin.firestore.FieldValue.arrayRemove(payment_id)});
+    return removeFromDailySummary((-payment_data.payment_details.total_paid),payment_data.date.toDate(),payment_data.payment_details.payment_method).then(()=>{
+        return db.runTransaction((transaction)=>{
+            return transaction.get(instRef).then((doc)=>{
+                if(!doc.exists){
+                    throw new Error("Installment Not Found");
+                }
+                let instData = doc.data();
+                let receipt_usage = instData.receipt_usage;
+                transaction.update(paymentDataRef,{receipt_ids  : admin.firestore.FieldValue.arrayRemove(payment_id)});
 
-            withdrawFunds(receipt_usage,payment_id,instData,inst_no,group_id,ticket_no,transaction);
-            return "success";
+                withdrawFunds(receipt_usage,payment_id,instData,inst_no,group_id,ticket_no,transaction);
+                return "success";
+            })
+        }).then(()=>{
+            console.log("Payment Cancelled and funds withdrawn succcesfully");
+            return;
+        }).catch((err)=>{
+            console.error(err);
+            paymentDataRef.collection({status:"success"}); // rollback
+            return;
         })
     }).then(()=>{
-        console.log("Payment Cancelled and funds withdrawn succcesfully");
+        console.log("Daily Summary updated succcesfully");
         return;
-    }).catch((err)=>{
+    })
+    .catch((err)=>{
         console.error(err);
-        paymentDataRef.collection({status:"success"}); // rollback
         return;
     })
 
