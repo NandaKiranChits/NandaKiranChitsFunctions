@@ -14,7 +14,13 @@ const removeFromDailySummary = (amount,date,payment_method) =>{
             if(!doc.exists){
                 throw new Error("Data Doesnt Exist");
             }
+            let summaryData = doc.data();
             var keyName = payment_method.toLowerCase();
+            if(summaryData[keyName] - Math.abs(amount) < 0 ) // amount will be negative already
+            {
+                console.log("This is shit. The summary value cannot go below 0");
+                throw new Error("Summary Value going below 0 error");
+            }
             let toUpdate = {}
             toUpdate[keyName] = admin.firestore.FieldValue.increment(amount);
             transaction.update(ref,toUpdate);

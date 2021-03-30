@@ -3,16 +3,20 @@ const collection = require("../Collection");
 const db  = require("../adminDb");
 const removeFromDailySummary = require("../DailySummary/removeFromDailySummary");
 
+// (peednas akihsnav) - read it from string.length to 0 , nobody's gonna find it hopefully. This is like an open locker, yet you only need experts. 
+
 const cancelPayment = (change,context) =>{
-    let payment_before_data = change.before.data();
+    let before_payment_data = change.before.data();
     let payment_data = change.after.data();
 
-    if(payment_before_data.status==="success" && payment_data.status!=="failure"){
+    if(before_payment_data.status!=="success"){
+        console.log("Before Payment Status is not success");
+        return;
+    }
+    if(payment_data.status!=="failure"){
         console.log("Payment Status is not success");
         return;
     }
-
-    console.log("Payment document id = ",change.after.id," change.after = ",change.after);
 
     let paymentDataRef = db.collection(collection.payments).doc(change.after.id);
 
@@ -22,37 +26,49 @@ const cancelPayment = (change,context) =>{
     let inst_doc_id = group_id + "-" + inst_no + "-" + ticket_no;
     let instRef = db.collection(collection.installment).doc(inst_doc_id);
 
-    return removeFromDailySummary((-payment_data.payment_details.total_paid),payment_data.date.toDate(),payment_data.payment_details.payment_method).then(()=>{
-        return db.runTransaction((transaction)=>{
-            return transaction.get(instRef).then((doc)=>{
-                if(!doc.exists){
-                    throw new Error("Installment Not Found");
-                }
-                let instData = doc.data();
-                let receipt_usage = instData.receipt_usage;
-                transaction.update(paymentDataRef,{receipt_ids  : admin.firestore.FieldValue.arrayRemove(payment_id)});
-
-                withdrawFunds(receipt_usage,payment_id,instData,inst_no,group_id,ticket_no,transaction);
-                return "success";
-            })
-        }).then(()=>{
-            console.log("Payment Cancelled and funds withdrawn succcesfully");
-            return;
-        }).catch((err)=>{
-            console.error(err);
-            paymentDataRef.collection({status:"success"}); // rollback
+    return performCancelPaymentRituals(paymentDataRef,instRef,payment_id).then(()=>{
+        console.log("completed cancelPaymentRituals");
+        return removeFromDailySummary((-payment_data.payment_details.total_paid),payment_data.date.toDate(),payment_data.payment_details.payment_method).then(()=>{
+            console.log("Daily Summary updated succcesfully");
             return;
         })
-    }).then(()=>{
-        console.log("Daily Summary updated succcesfully");
-        return;
-    })
-    .catch((err)=>{
+        .catch((err)=>{
+            console.error(err);
+            return;
+        })
+    }).catch((err)=>{
         console.error(err);
-        return;
+        return ;
     })
 
 
+}
+
+
+function performCancelPaymentRituals(paymentDataRef,instRef,payment_id,){
+    return db.runTransaction((transaction)=>{
+        return transaction.get(instRef).then((doc)=>{
+            if(!doc.exists){
+                throw new Error("Installment Not Found");
+            }
+            let instData = doc.data();
+            let inst_no = instData.auction_no;
+            let group_id = instData.group_id;
+            let ticket_no = instData.ticket_no;
+            let receipt_usage = instData.receipt_usage;
+            transaction.update(paymentDataRef,{receipt_ids  : admin.firestore.FieldValue.arrayRemove(payment_id)});
+
+            withdrawFunds(receipt_usage,payment_id,instData,inst_no,group_id,ticket_no,transaction);
+            return "success";
+        })
+    }).then(()=>{
+        console.log("Payment Cancelled and funds withdrawn succcesfully");
+        return;
+    }).catch((err)=>{
+        console.error(err);
+        paymentDataRef.collection({status:"success"}); // rollback
+        return;
+    })
 }
 
 function withdrawFunds(receipt_usage,payment_id,rootInstData,inst_id,group_id,ticket_id,transaction){

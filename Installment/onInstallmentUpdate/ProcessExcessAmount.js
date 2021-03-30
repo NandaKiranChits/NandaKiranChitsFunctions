@@ -10,7 +10,6 @@ const processExcessAmount = (inst_doc_id,instData) =>{
                          .where("status","in",["due","part"])
                          .orderBy("generated_date","desc"); 
     
-    console.log("Group id = ",instData.group_id," ticket no = ",instData.ticket_no," query - ",dueInstQuery);
 
     return db.runTransaction((transaction)=>{
         return transaction.get(dueInstQuery).then((snap)=>{
@@ -28,8 +27,6 @@ const processExcessAmount = (inst_doc_id,instData) =>{
 
             var donated = (excess_amount - result[0]);
             receipt_usage = result[1];
-            
-            
 
             transaction.update(instRef,{donated:admin.firestore.FieldValue.increment(donated),receipt_usage});
             
