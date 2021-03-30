@@ -17,7 +17,6 @@ const processExcessAmount = (inst_doc_id,instData) =>{
 
             var excess_amount = instData.advance_paid - instData.donated;
             let receipt_usage = instData.receipt_usage;
-            let lastReceiptID = instData.receipt_ids.length===0 ? null : instData.receipt_ids.pop();
 
             console.log("The excess amount available is ",excess_amount);
 
@@ -25,18 +24,14 @@ const processExcessAmount = (inst_doc_id,instData) =>{
                 throw new Error("There is no excess amount");
             }
 
-            var result = processInstallments(snap,transaction,excess_amount,lastReceiptID,receipt_usage); // run only once
+            var result = processInstallments(snap,transaction,excess_amount,receipt_usage); // run only once
 
-            var logs = result[0];
-            var donated = (excess_amount - result[1]);
-            receipt_usage = result[2];
-            var contributed_to = instData.contributed_to;
+            var donated = (excess_amount - result[0]);
+            receipt_usage = result[1];
             
-            logs.forEach((log)=>{
-                contributed_to.push(log);
-            });
+            
 
-            transaction.update(instRef,{contributed_to,donated:admin.firestore.FieldValue.increment(donated),receipt_usage});
+            transaction.update(instRef,{donated:admin.firestore.FieldValue.increment(donated),receipt_usage});
             
             return "success";
         })
@@ -52,8 +47,8 @@ const processExcessAmount = (inst_doc_id,instData) =>{
 
 
 
-function processInstallments(snap,transaction,excess_amount,lastReceiptID,receipt_usage){
-    var logs = [];
+function processInstallments(snap,transaction,excess_amount,receipt_usage){
+   
 
 
     console.log("Size of snap is ",snap.size)
@@ -96,17 +91,10 @@ function processInstallments(snap,transaction,excess_amount,lastReceiptID,receip
             };
 
             transaction.update(subinstRef,toUpdate);
-
-            logs.push({
-                receipt_id : lastReceiptID,
-                amount : available,
-                installment_id : subinstData.auction_no,
-            });
-
         }
     });
 
-    return [logs,excess_amount,receipt_usage];
+    return [excess_amount,receipt_usage];
 }
 
 function processReceiptUsage(receipt_usage,used_amount,inst_no){

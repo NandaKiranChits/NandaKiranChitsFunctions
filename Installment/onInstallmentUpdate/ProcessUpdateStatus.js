@@ -22,9 +22,6 @@ const processInstallment = (instData) =>{
     var total_paid = instData.total_paid;
     console.log("total Paid = ",total_paid);
     
-    total_paid = total_paid - instData.accepted_from_other; // eliminate amount from other installments
-    var advance_paid = (total_paid > total_payable) ? (total_paid - total_payable)  : 0;
-    
     let status = null;
     if(total_paid >= total_payable){
         status = "paid";
@@ -35,6 +32,9 @@ const processInstallment = (instData) =>{
     else{
         status = "due";
     }
+    
+    total_paid = total_paid - instData.accepted_from_other; // eliminate amount from other installments
+    var advance_paid = (total_paid > total_payable) ? (total_paid - total_payable)  : 0;
 
     console.log("Updating status as ",status);
 

@@ -70,7 +70,6 @@ function getInstallmentData(customerData,auction_no,auction_date,dividend,groupD
         auction_no  : auction_no,
         cust_id : customerData.cust_id,
 
-        contributed_to : [], // {receipt_id:id,amount:amount,installment_id:inst_id}
 
         accepted_from_other : 0 , 
         advance_paid :0 ,

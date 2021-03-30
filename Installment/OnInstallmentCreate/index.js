@@ -38,12 +38,12 @@ const onInstallmentCreate = (snap,context) =>{
 
                 amount_gathered = amount_gathered + available;
 
+                var receipt_usage = processReceiptUsage(subInstData.receipt_usage,available,instData.auction_no);
+
                 transaction.update(subInstref,{
                     donated : admin.firestore.FieldValue.increment(available),
-                    contributed_to : admin.firestore.FieldValue.arrayUnion({receipt_id : lastReceiptID,
-                                                                            amount : available,
-                                                                            installment_id : instData.auction_no,})
-                    })
+                    receipt_usage,
+                });
             });
 
             transaction.update(instRef,{
@@ -70,6 +70,29 @@ function getPayable(instData){
                         + (instData.interest - instData.waived_interest) 
                         - (instData.accepted_from_other+instData.total_paid));
     return total_payable;
+}
+
+function processReceiptUsage(receipt_usage,used_amount,inst_no){
+    for(let i=0;i<receipt_usage.length;i++){
+        let available = receipt_usage[i].value - receipt_usage[i].total_used;
+        if(available>0){
+            let using = 0;
+            if(available<=used_amount){
+                using = used_amount;
+            }
+            else{
+                using = available;
+            }
+            used_amount = used_amount - using;
+            receipt_usage[i].total_used = receipt_usage[i].total_used + using;
+            receipt_usage[i].used_in.push({inst_no,used:using});
+            if(used_amount===0){
+                break;
+            }
+        }
+    }
+    console.log("Receipt usage ",receipt_usage);
+    return receipt_usage;
 }
 
 

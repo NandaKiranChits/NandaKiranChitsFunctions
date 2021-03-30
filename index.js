@@ -16,6 +16,7 @@ const scheduledInterestAssigner = require("./CronTasks/InterestAssigner");
 const onPaymentAdd = require("./Payments/onPaymentAdd");
 const onInstallmentUpdate = require("./Installment/onInstallmentUpdate/index");
 const onInstallmentCreate = require("./Installment/OnInstallmentCreate/index");
+const CancelPayment = require("./Payments/cancelPayment");
 
 /*
 
@@ -34,5 +35,6 @@ exports.onInstallmentUpdate = functions.firestore.document(`${CollectionNames.in
 exports.onInstallmentCreate = functions.firestore.document(`${CollectionNames.installment}/{auction_no}`).onCreate(onInstallmentCreate);
 
 exports.onPaymentAdd = functions.firestore.document(`${CollectionNames.payments}/{payment_id}`).onCreate(onPaymentAdd);
+exports.onPaymentCancel = functions.firestore.document(`${CollectionNames.payments}/{payment_id}`).onUpdate(CancelPayment);
 
 exports.scheduledInterestAssigner = functions.pubsub.schedule("every day 00:16").timeZone("Asia/Kolkata").onRun(scheduledInterestAssigner);

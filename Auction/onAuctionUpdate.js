@@ -91,7 +91,6 @@ const addInstallmentToUserAccount = (auction_data,group_id) =>{
                         auction_no  : auction_data.auction_no + 1,
                         cust_id : userData.cust_id,
                         
-                        contributed_to : [],// {receipt_id:id,amount:amount,installment_id:inst_id}
                         accepted_from_other : 0 ,
                         advance_paid :0 ,
                         donated : 0,
