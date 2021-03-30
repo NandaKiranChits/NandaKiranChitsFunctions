@@ -16,9 +16,15 @@ const processUpdateStatus = (instData,documentID) =>{
 
 const processInstallment = (instData) =>{
     var total_payable = ((instData.installment_value - instData.dividend)  + instData.other_charges + (instData.interest - instData.waived_interest));
+    
     console.log("Total Payable = ",total_payable);
+    
     var total_paid = instData.total_paid;
     console.log("total Paid = ",total_paid);
+    
+    total_paid = total_paid - instData.accepted_from_other; // eliminate amount from other installments
+    var advance_paid = (total_paid > total_payable) ? (total_paid - total_payable)  : 0;
+    
     let status = null;
     if(total_paid >= total_payable){
         status = "paid";
@@ -30,17 +36,14 @@ const processInstallment = (instData) =>{
         status = "due";
     }
 
-
     console.log("Updating status as ",status);
-    
-    total_paid = total_paid - instData.accepted_from_other; // eliminate amount from other installments
-    var advance_paid = (total_paid > total_payable) ? (total_paid - total_payable)  : 0;
 
     instData["advance_paid"] = advance_paid;
     instData["status"] = status;
 
     return instData;
 }
+
 
 
 module.exports = processUpdateStatus;

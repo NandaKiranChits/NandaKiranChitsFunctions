@@ -100,6 +100,7 @@ const addInstallmentToUserAccount = (auction_data,group_id) =>{
                         due_date : new Date(auction_data.create_date.toDate()).addDays(groupData.interestStartsAfterHowManyDays),
                         generated_date : new Date(),
                         group_id : group_id,
+                        receipt_usage : [],
                         installment_value : groupData.monthly_subscription,
                         interestRate :(userData.status==="Prized"?groupData.prizedInterestRate:groupData.nonPrizedInterestRate),
                         other_charges : 0,

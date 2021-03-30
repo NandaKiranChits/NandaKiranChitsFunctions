@@ -84,6 +84,7 @@ function getInstallmentData(customerData,auction_no,auction_date,dividend,groupD
         interestRate :(customerData.status==="Prized"?groupData.prizedInterestRate:groupData.nonPrizedInterestRate),
         other_charges : 0,
         receipt_ids : [],
+        receipt_usage : [],
         status : "due",
         system_comments : null,
         ticket_no : customerData.ticket_no,

@@ -46,6 +46,7 @@ const addPaymentToInstallment = (paymentData) =>{
             var toUpdateInst = {
                 receipt_ids : admin.firestore.FieldValue.arrayUnion(paymentData.payment_id),
                 total_paid  : admin.firestore.FieldValue.increment(paymentData.payment_details.total_paid),
+                receipt_usage : admin.firestore.FieldValue.arrayUnion(processReceiptUsage(paymentData,installmentData)),
             }
             var toUpdateCust = {
                 account_balance : admin.firestore.FieldValue.increment(paymentData.payment_details.total_paid),
@@ -56,6 +57,31 @@ const addPaymentToInstallment = (paymentData) =>{
             return "done";
         })
     });
+}
+
+function processReceiptUsage(paymentData,instData){
+    let inst_no = instData.auction_no;
+    let total_paid = paymentData.payment_details.total_paid;
+
+    let receipt_usage = {payment_id:paymentData.payment_id,value:total_paid,total_used:0,used_in:[]};
+
+    let payable = (instData.installment_value - instData.dividend + instData.other_charges + (instData.interest - instData.waived_interest )) - (instData.total_paid);  
+
+    let used = 0;
+    if(payable>0){
+        if(total_paid <= payable){
+            used = total_paid;
+        }
+        else if(total_paid > payable){
+            used = payable;
+        }
+    }
+    if(used>0){
+        receipt_usage["total_used"] = receipt_usage["total_used"] + used;
+        receipt_usage["used_in"].push({inst_no,used});
+    }
+    
+    return receipt_usage;
 }
 
 
