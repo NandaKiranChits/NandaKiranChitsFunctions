@@ -27,29 +27,34 @@ const onInstallmentCreate = (snap,context) =>{
                 var amount_available = (subInstData.advance_paid - subInstData.donated);
                 var available = 0;
 
-                let lastReceiptID = subInstData.receipt_ids.length===0? null:subInstData.receipt_ids.pop();
+                //let lastReceiptID = subInstData.receipt_ids.length===0? null:subInstData.receipt_ids.pop();
 
                 if(amount_available>=required_amount){
                     available = required_amount;
                 }
                 else if(amount_available < required_amount){
                     available = amount_available;
-                }
+                }   
 
                 amount_gathered = amount_gathered + available;
 
-                var receipt_usage = processReceiptUsage(subInstData.receipt_usage,available,instData.auction_no);
+                console.log("Amount Gathered = ",amount_gathered," took value from inst ",instData.auction_no," of rupees ",available);
 
-                transaction.update(subInstref,{
-                    donated : admin.firestore.FieldValue.increment(available),
-                    receipt_usage,
-                });
+                var receipt_usage = processReceiptUsage(subInstData.receipt_usage,available,instData.auction_no);
+                if(available>0){
+                    transaction.update(subInstref,{
+                        donated : admin.firestore.FieldValue.increment(available),
+                        receipt_usage,
+                    });
+                }
             });
 
-            transaction.update(instRef,{
+
+                transaction.update(instRef,{
                                      total_paid : admin.firestore.FieldValue.increment(amount_gathered),
                                      accepted_from_other : admin.firestore.FieldValue.increment(amount_gathered)
                                 });
+            
             
 
             return "success";
@@ -76,13 +81,7 @@ function processReceiptUsage(receipt_usage,used_amount,inst_no){
     for(let i=0;i<receipt_usage.length;i++){
         let available = receipt_usage[i].value - receipt_usage[i].total_used;
         if(available>0){
-            let using = 0;
-            if(available>=used_amount){
-                using = used_amount;
-            }
-            else{
-                using = available;
-            }
+            let using = (available>=used_amount) ? used_amount : available ;
             used_amount = used_amount - using;
             receipt_usage[i].total_used = receipt_usage[i].total_used + using;
             receipt_usage[i].used_in.push({inst_no,used:using});
@@ -91,7 +90,10 @@ function processReceiptUsage(receipt_usage,used_amount,inst_no){
             }
         }
     }
-    console.log("Receipt usage ",receipt_usage);
+    receipt_usage.forEach((usage)=>{
+        console.log(usage);
+        console.log(usage.used_in);
+    })
     return receipt_usage;
 }
 

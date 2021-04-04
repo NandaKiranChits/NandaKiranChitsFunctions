@@ -15,7 +15,7 @@ const InterestAssigner = (context) =>{
             snap.forEach((doc)=>{
 
                 let inst_data = doc.data();
-                let payable = (inst_data.installment_value - inst_data.dividend - inst_data.total_paid - inst_data.waived_interest);
+                let payable = (inst_data.installment_value - inst_data.dividend - inst_data.total_paid - (inst_data.interest -inst_data.waived_interest));
                 let instRef = db.collection(collectionNames.installment).doc(doc.id);
                 let interest = parseInt(calcInterest(inst_data.due_date.toDate(),payable,inst_data.interestRate));
 

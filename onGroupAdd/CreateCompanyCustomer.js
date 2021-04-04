@@ -38,7 +38,6 @@ function createCompanyCustomer(group_id,ticket_no){
     var doc_id = group_id + "-" + ticket_no;
 
     var customerRef = db.collection(collectionRef.groupCustomer).doc(doc_id);
-    var groupRef = db.collection(collectionRef.group).doc(group_id);
 
     return db.runTransaction((transaction)=>{
         return transaction.get(customerRef).then((doc)=>{
@@ -46,7 +45,6 @@ function createCompanyCustomer(group_id,ticket_no){
                 throw new Error("GRoup Customer Already Exists");
             }
             transaction.set(customerRef,data);
-            transaction.update(groupRef,{occupied_members: admin.firestore.FieldValue.increment(1)});
             return "success";
         })
     }).then(()=>{

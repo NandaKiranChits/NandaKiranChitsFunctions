@@ -90,6 +90,8 @@ function getInstallmentData(customerData,auction_no,auction_date,dividend,groupD
         total_paid : 0,
         interest : 0,
         waived_interest : 0,
+
+        other_charges_details : [],
     }
 
     return instData;

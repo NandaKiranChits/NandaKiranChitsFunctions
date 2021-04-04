@@ -6,6 +6,7 @@ const CollectionNames = {
     installment : "Installment",
     payments : "Payments",
     daily_collection : "DailyCollection",
+    voucher : "Voucher"
 }
 
 module.exports = CollectionNames;

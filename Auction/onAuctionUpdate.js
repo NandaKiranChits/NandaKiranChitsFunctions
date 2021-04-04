@@ -110,6 +110,8 @@ const addInstallmentToUserAccount = (auction_data,group_id) =>{
                         total_paid : 0,
                         interest : 0,
                         waived_interest : 0,
+
+                        other_charges_details : [],
                     }
                     transaction.set(userInstallmentRef,instData);
                     transaction.update(userRef,{account_balance:admin.firestore.FieldValue.increment(-(instData.installment_value-instData.dividend))});
