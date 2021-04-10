@@ -9,7 +9,7 @@ const onInstallmentUpdateChangeStatus = (change,context) =>{
     if((currentInstData.total_paid===prevInstData.total_paid) && // total paid will be increased when accepted_from_other increases
        (currentInstData.waived_interest===prevInstData.waived_interest) &&
        (currentInstData.other_charges===prevInstData.other_charges)
-     ){
+    ){
         console.log("No changes observerd");
         return;
     }
