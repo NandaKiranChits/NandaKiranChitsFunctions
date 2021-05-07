@@ -4,8 +4,6 @@ const fs = require('fs');
 
 var customerRef = db.collection(collection.customer);
 
-
-
 let rawdata = fs.readFileSync('/home/vinay/Projects/NandakiranChits/downloadNandaKiranchitsData/customerDownload.json');
 let json_data = JSON.parse(rawdata);
 

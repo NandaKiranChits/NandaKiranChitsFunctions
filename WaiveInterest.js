@@ -13,6 +13,7 @@ const WaiveInterest = () =>{
             console.log("Updated ",doc.id);
         })
         console.log(count);
+        return "done dude"
     }).catch((err)=>{
         console.error(err);
     })
