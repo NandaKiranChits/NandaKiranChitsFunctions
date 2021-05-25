@@ -24,7 +24,7 @@ const useExcessAmount = (change,context) =>{
                          .where("group_id","==",currentInstData.group_id)
                          .where("ticket_no","==",currentInstData.ticket_no)
                          .where("status","in",["due","part"])
-                         .orderBy("generated_date"); 
+                         .orderBy("auction_no"); 
 
     const instDataRef = db.collection(collections.installment).doc(change.after.id);
 
