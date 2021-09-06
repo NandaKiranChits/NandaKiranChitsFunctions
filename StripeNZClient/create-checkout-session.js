@@ -46,7 +46,7 @@ const createOrder = (formValues)=>{
     var orderIdQuery = collectionRef.orderBy("order_id","desc").limit(1);
 
     return db.runTransaction((transaction)=>{
-        return transaction.get(orderIdQuery).then((snap)=>{
+        return transaction.get(orderIdQuery).then((snap)=>{ 
             snap.forEach((doc)=>{
                 order_id = doc.data()["order_id"] + 1;
             });

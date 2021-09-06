@@ -14,9 +14,11 @@
   },
   "main": "index.js",
   "dependencies": {
+    "axios": "^0.21.3",
     "cors": "^2.8.5",
     "firebase-admin": "^9.2.0",
     "firebase-functions": "^3.11.0",
+    "https": "^1.0.0",
     "stripe": "^8.174.0"
   },
   "devDependencies": {

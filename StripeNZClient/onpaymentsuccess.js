@@ -1,4 +1,5 @@
 const db = require("../adminDb");
+const sendMail = require("./sendMail");
 
 const html = `
 <html>
@@ -22,7 +23,7 @@ const stripepaymentSuccess = (req,res) =>{
     var order_id = req.query.order_id;
 
     const orderRef = db.collection("NZSnapCleaning").doc(order_id);
-
+    sendMailToClient(orderRef);
     return orderRef.update({status:"success"}).then(()=>{
         console.log("Order Payment Succesfully");
         console.log("ORder updated succesfully");
@@ -34,6 +35,21 @@ const stripepaymentSuccess = (req,res) =>{
         console.log("Donot know what to do");
         res.status(200).send(html);
         return "failure";
+    })
+}
+
+function sendMailToClient(orderRef){
+    return orderRef.get().then((doc)=>{
+        if(!doc.exists){
+            console.log("Order doesnt exist");
+            return;
+        }
+        var orderData = doc.data();
+        sendMail("support@snapcleaning.co.nz",orderData["name"]);
+        sendMail(orderData["email"],orderData["name"]);
+        return "success";
+    }).catch((err)=>{
+        console.error(err);
     })
 }
 
