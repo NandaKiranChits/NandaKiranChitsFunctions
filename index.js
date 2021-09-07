@@ -21,9 +21,9 @@ const CancelPayment = require("./Payments/cancelPayment");
 const onVoucherAdd = require("./Voucher/onVoucherAdd/index");
 
 
-const stripeCheckout = require("./StripeNZClient/create-checkout-session");
-const stripepaymentSuccess = require("./StripeNZClient/onpaymentsuccess");
-const stripepaymentFailure = require('./StripeNZClient/onpaymentfailure');
+const stripeCreatePaymentIntent = require("./StripeNZClient/create-payment-intent");
+const paymentWebhook = require('./StripeNZClient/paymentWebhook');
+
 
 
 /*
@@ -53,6 +53,7 @@ exports.onVoucherAdd = functions.firestore.document(`${CollectionNames.voucher}/
 
 exports.scheduledInterestAssigner = functions.pubsub.schedule("every day 00:16").timeZone("Asia/Kolkata").onRun(scheduledInterestAssigner);
 
-exports.createStripeCheckout = functions.https.onRequest(stripeCheckout);
-exports.stripePaymentSuccess = functions.https.onRequest(stripepaymentSuccess);
-exports.stripePaymentFailure = functions.https.onRequest(stripepaymentFailure);
+
+
+exports.createStripePaymentIntent = functions.https.onRequest(stripeCreatePaymentIntent);
+exports.paymentWebhook = functions.https.onRequest(paymentWebhook);
