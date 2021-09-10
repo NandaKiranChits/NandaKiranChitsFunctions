@@ -53,8 +53,8 @@ function markPaymentAsSuccess(payment_intent_id){
             return order_data;
         })
     }).then(async (order_data)=>{
-        await sendMail(order_data["email"],order_data["name"]);
-        await sendMail("support@snapcleaning.co.nz",order_data["name"]);
+        await sendMail(order_data["email"],order_data);
+        await sendMail("support@snapcleaning.co.nz",order_data);
         console.log("Succesfully updated the order");
         return;
     }).catch((err)=>{
