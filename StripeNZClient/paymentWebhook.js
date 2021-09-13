@@ -1,4 +1,4 @@
-const stripe = require('stripe')('sk_test_8zVJDcJow7sw9wssgygHmLWZ00udhUi3bv');
+const stripe = require('stripe')('pk_live_2vwVdjZ2qs0MRgeVFoGkWBF300FzATeVZJ');
 const db = require("../adminDb");
 const sendMail = require("./sendMail");
 
