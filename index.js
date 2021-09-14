@@ -24,6 +24,8 @@ const onVoucherAdd = require("./Voucher/onVoucherAdd/index");
 const stripeCreatePaymentIntent = require("./StripeNZClient/create-payment-intent");
 const paymentWebhook = require('./StripeNZClient/paymentWebhook');
 
+const validateCouponCode = require("./StripeNZClient/validateCouponCode");
+
 
 
 /*
@@ -57,3 +59,4 @@ exports.scheduledInterestAssigner = functions.pubsub.schedule("every day 00:16")
 
 exports.createStripePaymentIntent = functions.https.onRequest(stripeCreatePaymentIntent);
 exports.paymentWebhook = functions.https.onRequest(paymentWebhook);
+exports.validateCouponCode = functions.https.onRequest(validateCouponCode);

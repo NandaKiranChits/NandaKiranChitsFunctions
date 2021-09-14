@@ -1,4 +1,4 @@
-const stripe = require('stripe')('pk_live_2vwVdjZ2qs0MRgeVFoGkWBF300FzATeVZJ');
+const stripe = require('stripe')('sk_live_OAUOUX5FYteIk2zaBBEsW4Ro004ozlQl3x');
 const db = require("../adminDb");
 const cors = require('cors')({origin: true});
 
@@ -14,7 +14,7 @@ const createPaymentIntent = async (req,res) =>{
     
         const paymentIntent = await stripe.paymentIntents.create({
             amount : parseFloat(req.body.total)*100,
-            currency : "usd",
+            currency : "nzd",
         }).catch((err)=>{
             console.error(err);
             res.status(401).send("Failed to create stripe payment intent. Try again");
