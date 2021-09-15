@@ -26,7 +26,9 @@ function sendMail(email,order_data){
     content = content.replace("{{gst}}",order_data["gst"]);
     content = content.replace("{{discount}}",order_data["discount"]);
     content = content.replace("{{no_of_bedroom}}",order_data["bedroom"]);
-    content = content.replace("{{no_of_bathroom}}",order_data["bathroom"] + " "+order_data["frequency"] );
+    content = content.replace("{{no_of_bathroom}}",order_data["bathroom"]);
+    content = content.replace("{{frequency}}",order_data["frequency"]);
+    content = content.replace("{{additional_info}}",order_data["addition_info"]);
     
 
     const elementString = `
