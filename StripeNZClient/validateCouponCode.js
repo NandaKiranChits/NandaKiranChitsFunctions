@@ -37,7 +37,7 @@ const couponCodes = [
         min_order_value : 0,
         max_discount_value : 10000000000000000,
         start_date : new Date(2022,0,1,0,0,0), //month is zero indexed Date : Jan 1st 2022 12:00:00 AM 
-        end_date   : new Date(2021,1,28,23,59,59), // ends on 28 Feb 2022 11:59:59 PM
+        end_date   : new Date(2022,1,28,23,59,59), // ends on 28 Feb 2022 11:59:59 PM
         applicable_frequency : ["Weekly","Fornightly"],
         max_times : 1,
         only_for_new_users : true,
@@ -50,7 +50,7 @@ const couponCodes = [
         min_order_value : 450,
         max_discount_value : null,
         start_date : new Date(2022,2,1,0,0,0), //month is zero indexed Date : Mar 1st 2022 12:00:00 AM 
-        end_date   : new Date(2021,3,30,23,59,59), // ends on 30 Apr 2022 11:59:59 PM
+        end_date   : new Date(2022,3,30,23,59,59), // ends on 30 Apr 2022 11:59:59 PM
         applicable_frequency : ["End of Tenancy","Move in Cleaning"],
         max_times : 10,
         only_for_new_users : false,
@@ -77,7 +77,7 @@ const couponCodes = [
         min_order_value : 0,
         max_discount_value : 100000,
         start_date : new Date(2022,7,27,0,0,0), //month is zero indexed Date : Aug 27th 2022 12:00:00 AM 
-        end_date   : new Date(2021,8,3,23,59,59), // ends on 3rd Sep 2022 11:59:59 PM
+        end_date   : new Date(2022,8,3,23,59,59), // ends on 3rd Sep 2022 11:59:59 PM
         applicable_frequency : ["End of Tenancy","Move in Cleaning","Weekly","Fortnightly"],
         max_times : 1,
         only_for_new_users : false,
@@ -90,7 +90,20 @@ const couponCodes = [
         min_order_value : 0,
         max_discount_value : 100000,
         start_date : new Date(2022,4,2,0,0,0), //month is zero indexed Date : May 2nd 2022 12:00:00 AM 
-        end_date   : new Date(2021,4,8,23,59,59), // ends on 8th May 2022 11:59:59 PM
+        end_date   : new Date(2022,4,8,23,59,59), // ends on 8th May 2022 11:59:59 PM
+        applicable_frequency : ["End of Tenancy","Move in Cleaning","Weekly","Fortnightly"],
+        max_times : 1,
+        only_for_new_users : false,
+    },
+    {
+        coupon_code : "REFER40",
+        percentage_discount : false,
+        percentage : null,
+        flat_discount : 40,
+        min_order_value : 70,
+        max_discount_value : null,
+        start_date : new Date(2021,9,1,0,0,0), //month is zero indexed Date : Oct 1st 2021 12:00:00 AM 
+        end_date   : new Date(2023,11,31,23,59,59), // ends on 23rd Dec 2023 11:59:59 PM
         applicable_frequency : ["End of Tenancy","Move in Cleaning","Weekly","Fortnightly"],
         max_times : 1,
         only_for_new_users : false,
