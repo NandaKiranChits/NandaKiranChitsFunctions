@@ -29,6 +29,8 @@ function sendMail(email,order_data){
     content = content.replace("{{no_of_bathroom}}",order_data["bathroom"]);
     content = content.replace("{{frequency}}",order_data["frequency"]);
     content = content.replace("{{additional_info}}",order_data["addition_info"]);
+    content = content.replace("{{name}}",order_data["name"]);
+    content = content.replace("{{phone}}",order_data["mobile"]);
     
 
     const elementString = `
