@@ -26,6 +26,7 @@ const paymentWebhook = require('./StripeNZClient/paymentWebhook');
 
 const validateCouponCode = require("./StripeNZClient/validateCouponCode");
 
+const printPaymentReceipt = require("./printPaymentReceipt/index");
 
 
 /*
@@ -37,6 +38,7 @@ IMPORTANT NOTES:
 
 */
 
+exports.printPaymentReceipt = functions.https.onRequest(printPaymentReceipt);
 
 exports.onAuctionUpdate  = functions.firestore.document(`${CollectionNames.auction}/{auction_id}`).onUpdate(onAuctionUpdate);
 
@@ -54,8 +56,6 @@ exports.onPaymentCancel = functions.firestore.document(`${CollectionNames.paymen
 exports.onVoucherAdd = functions.firestore.document(`${CollectionNames.voucher}/{voucher_no}`).onCreate(onVoucherAdd);
 
 exports.scheduledInterestAssigner = functions.pubsub.schedule("every day 00:16").timeZone("Asia/Kolkata").onRun(scheduledInterestAssigner);
-
-
 
 exports.createStripePaymentIntent = functions.https.onRequest(stripeCreatePaymentIntent);
 exports.paymentWebhook = functions.https.onRequest(paymentWebhook);
